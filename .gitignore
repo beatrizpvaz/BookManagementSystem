@@ -41,3 +41,4 @@ Thumbs.db
 /__pycache__/
 /bookmanagement_app/__pycache__/
 /env/
+/instance/
