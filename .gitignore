@@ -42,3 +42,4 @@ Thumbs.db
 /bookmanagement_app/__pycache__/
 /env/
 /instance/
+pylintrc
