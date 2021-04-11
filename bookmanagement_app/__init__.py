@@ -30,4 +30,7 @@ def create_app(config_name):
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
+    from .directory import directory as directory_blueprint
+    app.register_blueprint(directory_blueprint)
+
     return app
