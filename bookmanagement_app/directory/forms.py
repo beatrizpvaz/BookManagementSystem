@@ -13,4 +13,6 @@ class BookForm(FlaskForm):
     review = StringField('Review')
     submit = SubmitField('Submit')
 
-
+class AddReview(FlaskForm):
+    review = StringField('Review') 
+    submit = SubmitField('Submit')

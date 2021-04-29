@@ -29,7 +29,12 @@
               <tbody>
               {% for book in books %}
                 <tr>
-                  <td> {{ book.title }} </td>
+                  <!-- <td> {{ book.title }} </td> -->
+                  <td> 
+                    <a href="{{ url_for('directory.book_info', id=book.id) }}" >
+                      <i class="fa fa-pencil"></i> {{ book.title }}
+                    </a> 
+                  </td>
                   <td> {{ book.author }} </td>
                   <td> {{ book.year }} </td>
                   <td> {{ book.publisher }} </td>
@@ -37,7 +42,7 @@
                   <td> {{ book.logged_by }} </td>
 
                   <td>
-                    <a href="{{ url_for('directory.edit_books', id=book.id) }}">
+                    <a href="{{ url_for('directory.edit_books', id=book.id, action = 'edit_book') }}">
                       <i class="fa fa-pencil"></i> Edit 
                     </a>
                   </td>

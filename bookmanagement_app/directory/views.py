@@ -1,11 +1,13 @@
-from flask import flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for, request
 from flask_login import login_required, login_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from .forms import BookForm
+from .forms import BookForm, AddReview
 from . import directory
 from ..models import Book, User
 from .. import db
+
+import requests
 
 @directory.route('/directory', methods=['GET', 'POST'])
 @login_required
@@ -52,39 +54,42 @@ def add_books():
 
     # #NEED TO ADD TEMPLATE
     return render_template('directory/book.html', action="Add",
-                           add_book=add_book, form=form,
+                           add_books=add_book, form=form,
                            title="Add Book")
 
-@directory.route('/directory/edit/<int:id>', methods=['GET', 'POST'])
+@directory.route('/directory/edit/<int:id>/<string:action>', methods=['GET', 'POST'])
 @login_required
-def edit_books(id):
+def edit_books(id, action):
     """
     Edit books in the database
     """
-
-    add_book = True
+    add_book = False
+    # add_review = False
 
     book = Book.query.get_or_404(id)
-    form = BookForm(object = book)
-    if form.validate_on_submit():
-        book.title = form.title.data
-        book.author = form.author.data
-        book.publisher = form.publisher.data
-        book.year = form.year.data
-        book.review = form.review.data
-        book.logged_by = form.logged_by.data
+    if (action=='add_review'):
+        form= AddReview()
+        if form.validate_on_submit():
+            form.populate_obj(book)
+            db.session.commit()
+            flash("You have added a review {}", book.review)
 
-        db.session.add(book)
-        db.session.commit()
-        flash("You have edited the book {}", book.title)
+            return redirect(url_for('directory.book_info', id = id))
 
-        # redirect to the books directory
-        return redirect(url_for('directory.list_books'))
+    else:
+        form = BookForm(obj = book)
+        if form.validate_on_submit():
+            form.populate_obj(book)
+            db.session.commit()
 
-    # form.description.data = department.description
-    # form.name.data = department.name
+            flash("You have edited the book {}", book.title)
+
+            # redirect to the books directory
+            return redirect(url_for('directory.list_books'))
+
+
     return render_template('directory/book.html', action="Edit",
-                           add_book=add_book, form=form,
+                           add_books=add_book, form=form,
                            title="Edit Book")
 
 @directory.route('/directory/delete/<int:id>', methods = ['GET', 'POST'])
@@ -102,6 +107,18 @@ def delete_books(id):
     # redirect to the roles page
     return redirect(url_for('directory.list_books'))
 
-#edit book
-    #add description
-#delete book
+@directory.route('/directory/bookinfo/<int:id>', methods = ['GET', 'POST'])
+@login_required
+def book_info(id):
+    """
+    Goes to each books individual page
+    """
+    book = Book.query.get_or_404(id)
+
+    return render_template('directory/bookpage.html', 
+                            book_db = book,
+                            books_result=requests.get("https://www.googleapis.com/books/v1/volumes?q="
+                                +book.title+"+inauthor:"+book.author
+                                +"&key=AIzaSyAQAR3-9hTT-O7VYf022aaO4lshg0q2vHU").json(),
+                            title="Books")
+

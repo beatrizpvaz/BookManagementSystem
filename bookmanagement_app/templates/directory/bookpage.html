@@ -1,0 +1,66 @@
+{% import "bootstrap/utils.html" as utils %}
+{% extends "base.html" %}
+{% block title %}Books{% endblock %}
+{% block body %}
+<div class="content-section">
+  <div class="outer">
+    <div class="middle">
+      <div class="inner">
+        <br/>
+        {{ utils.flashed_messages() }}
+        <br/>
+        <h1 style="text-align:center;"> {{ book_db.title }}</h1>
+        <hr class="intro-divider">
+          <div class="center">
+            <table class="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th width="15%"> Title </th>
+                  <th width="40%"> Author </th>
+                  <th width="15%"> Year </th>
+                  <th width="15%"> Publisher </th>
+                  <th width="15%"> Review </th>
+                  <th width="15%"> Logger </th>
+                </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td> {{ book_db.title }} </td>
+                <td> {{ book_db.author }} </td>
+                <td> {{ book_db.year }} </td>
+                <td> {{ book_db.publisher }} </td>
+                <td> {{ book_db.review }} </td>
+                <td> {{ book_db.logged_by }} </td>                  
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="text-align: center">
+
+        {% for book in books_result["items"] %}
+            <div id="book" class="card text-white bg-warning mb-3">
+              <div class="card-body">
+                  {% if book.volumeInfo.imageLinks %}
+                      <img id="bookImage" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}"
+                          title="{{ book.volumeInfo.title }}" alt="{{ book.volumeInfo.title }}"/>
+                  {% else %}
+                      <img width="60%" height="70%" src="../static/default-book-cover.jpg"
+                          title="{{ book.volumeInfo.title }}" alt="{{ book.volumeInfo.title }}"/>
+                  {% endif %}
+                  <h4 class="card-title"></h4>
+                  <p class="card-text">
+                      {% if book.volumeInfo.authors %}
+                          {% for author in book.volumeInfo.authors[:3] %}
+                              <span id="author" class="badge badge-primary text">{{ author[:24] }}&nbsp;</span>
+                          {% endfor %}
+                      {% endif %}
+                  </p>
+              </div>
+            </div>
+        {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
